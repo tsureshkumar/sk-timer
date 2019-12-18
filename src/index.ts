@@ -1,80 +1,80 @@
-import * as PIXI from 'pixi.js';
 import * as rx from 'rxjs';
+import * as rxop from 'rxjs/operators';
 import * as $ from 'jquery';
 import './app.scss';
 
-const app: PIXI.Application = new PIXI.Application({
-  transparent: true,
-  height: 300,
-});
-let message: PIXI.Text = null;
-
-function setup(counter: any) {
-  $('#container').append(app.view);
-  function resize() {
-    app.renderer.view.style.position = 'absolute';
-    app.renderer.view.style.left =
-      ((window.innerWidth - app.renderer.width) >> 1) + 'px';
-    app.renderer.view.style.top =
-      ((window.innerHeight - app.renderer.height) >> 1) + 'px';
-  }
-  resize();
-  window.addEventListener('resize', resize);
-  app.ticker.add((delta: number) => gameLoop());
-  const counterStyle = new PIXI.TextStyle({
-    fontFamily: 'Arial',
-    fontSize: 128,
-    fill: 'black',
-    stroke: 'black',
-    strokeThickness: 1,
-    dropShadow: true,
-    dropShadowColor: '#ADBDBD',
-    dropShadowBlur: 8,
-    dropShadowAngle: Math.PI / 6,
-    dropShadowDistance: 6,
-  });
-
-  message = new PIXI.Text(dateFormat(counter), counterStyle);
-  app.stage.addChild(message);
-
-  function gameLoop() {
-    message.x = (app.renderer.width - message.width) / 2;
-    message.y = (app.renderer.height - message.height) / 2;
-  }
-}
-
-function setupControls() {
-  $('#container').append(
-    "<div id='controls' class='container__row'><div class='row_element'><a href='#'><i class='fas fa-play fa-lg'></i></a><div></div>",
-  );
-  $('#controls').append(
-    "<div class='row_element'><a href='#'><i class='fas fa-stop fa-lg'></i></a></div>",
-  );
-  $('#controls').css({});
-}
-
-let counter: number = 0; //number of millis
-
-let start = new Date();
-const delta: number = 1000;
+// util functions
 const dateFormat = (counter: number) => {
-  let millis = counter % 1000;
-  let ss = ~~(counter / 1000) % 60;
-  let mm = ~~(counter / 1000 / 60) % 60;
-  let hh = ~~(counter / 1000 / 60 / 60);
-  return `${hh}:${mm}:${ss} ${millis}`;
+  const millis = counter % 1000;
+  const ss = ~~(counter / 1000) % 60;
+  const mm = ~~(counter / 1000 / 60) % 60;
+  const hh = ~~(counter / 1000 / 60 / 60);
+  return `${hh}:${mm}:${ss}`;
 };
 
-function init() {
-  rx.interval(delta).subscribe((x: number) => {
-    counter += delta;
-    message.text = dateFormat(counter);
-  });
+const updateTimer = (elapsed: number) => $('#timer').html(dateFormat(elapsed));
+
+interface Counter {
+  count: number;
+  inc: number; // in millis
 }
 
-$(document).ready(function() {
-  setup(counter);
-  setupControls();
-  init();
-});
+interface Control {
+  play: boolean;
+  stop: boolean;
+}
 
+const enum Command {
+  Play = 1,
+  Pause = 0,
+  Stop = 0
+}
+
+const play$ = rx
+  .fromEvent(document.getElementById('play'), 'click')
+  .pipe(rxop.mapTo(Command.Play));
+const stop$ = rx
+  .fromEvent(document.getElementById('stop'), 'click')
+  .pipe(rxop.mapTo(Command.Stop));
+const control$ = rx.merge(
+  rx.merge(play$, stop$).pipe(
+    rxop.scan((prev: Command, curr: Command) => {
+      switch (curr) {
+        case Command.Stop:
+          return Command.Stop;
+        case Command.Play:
+          if (prev === Command.Stop) return Command.Play;
+          if (prev === Command.Play) return Command.Pause;
+          return Command.Play;
+        default:
+          return Command.Stop;
+      }
+    }, Command.Pause),
+    rxop.map((cmd: Command) => cmd === 1),
+    rxop.tap((x: boolean) => console.log(x)),
+    rxop.map((x: boolean) => ({ play: x }))
+  )
+);
+
+const stopWatch$ = control$.pipe(
+  rxop.tap((state: Control) => console.log(state)),
+  rxop.switchMap((control: Control) =>
+    control.play ? rx.interval(1000) : rx.NEVER
+  ),
+  rxop.scan(
+    (acc: Counter, curr: number) => {
+      console.log(acc, curr);
+      return {
+        ...acc,
+        count: acc.count + acc.inc
+      };
+    },
+    { count: 0, inc: 1000 }
+  ),
+  rxop.tap((state: Counter) => {
+    console.log('fired', state);
+    updateTimer(state.count);
+  })
+);
+
+stopWatch$.subscribe();

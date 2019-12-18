@@ -1,12 +1,28 @@
-  <!doctype html>
-  <html>
-   <head>
-     <title>SK Timer </title>
-     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet"></link>
-     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/js/all.min.js"></script>
-   </head>
-   <body>
-       <div id='container' class='container'></div>
-       <script src='/js/sktimer.bundle.js'></script>
-   </body>
-  </html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SK Timer</title>
+    <script src="https://use.fontawesome.com/releases/v5.12.0/js/all.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css?family=Play&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <script>
+      window.FontAwesome.config = {autoReplaceSvg: false};
+    </script>
+    <div id="container" class="container">
+      <div id="timer">11:32:34</div>
+      <div class="container__row controls">
+        <div class="row_element">
+          <a href="#" id="play"><i class="fas fa-play fa-lg"></i></a>
+        </div>
+        <div class="row_element">
+          <a href="#" id="stop"><i class="fas fa-stop fa-lg"></i></a>
+        </div>
+      </div>
+    </div>
+    <script src="/js/sktimer.bundle.js"></script>
+  </body>
+</html>

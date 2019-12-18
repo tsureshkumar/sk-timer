@@ -1,11 +1,10 @@
 const path = require('path');
 const Copy = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.ts',
   entry: {
     sktimer: './src/index.ts',
   },
@@ -23,7 +22,7 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-  plugins: [new Copy([{from: 'public', to: './'}])],
+  plugins: [new Copy([{ from: 'public', to: './' }])],
   module: {
     rules: [
       {

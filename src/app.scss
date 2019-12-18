@@ -3,9 +3,12 @@ body {
   overflow: hidden;
 }
 
-
 $grid__bp-md: 768;
 .container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   max-width: $grid__bp-md * 1px;
   margin: 0 auto;
   &--fluid {
@@ -18,5 +21,17 @@ $grid__bp-md: 768;
     margin: 10px;
     align-items: left;
     border: 10px;
+    justify-content: center;
   }
+}
+
+.controls div {
+  margin-left: 10px;
+  font-size: 2em;
+}
+
+#timer {
+  text-align: center;
+  font-family: 'Play', sans-serif;
+  font-size: 12em;
 }
