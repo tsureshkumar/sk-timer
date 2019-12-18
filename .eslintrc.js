@@ -3,7 +3,13 @@ module.exports = {
     browser: true,
     es6: true,
   },
-  extends: ['airbnb'],
+  extends: [
+    'airbnb',
+    'plugin:prettier/recommended',
+    'prettier/flowtype',
+    'prettier/react',
+    'prettier/standard',
+  ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -16,19 +22,11 @@ module.exports = {
     sourceType: 'module',
   },
   parser: '@typescript-eslint/parser',
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
     'import/no-unresolved': 0,
-    'import/extensions': ['.js', '.json', '.jsx', '.ts', '.tsx'],
-    'react/jsx-filename-extension': {
-      extensions: ['.jsx', '.tsx'],
-    },
-  },
-  settings: {
-    'import/resolver': {
-      webpack: {
-        config: 'webpack.config.js',
-      },
-    },
+    'no-bitwise': 0,
+    'no-console': 0,
+    'prettier/prettier': ['error', {singleQuote: true}],
   },
 };

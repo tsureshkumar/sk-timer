@@ -25,9 +25,11 @@ interface Control {
 }
 
 const enum Command {
-  Play = 1,
-  Pause = 0,
-  Stop = 0
+  Play,
+  Pause,
+  Stop,
+  Inc,
+  Reset
 }
 
 const play$ = rx
@@ -36,8 +38,11 @@ const play$ = rx
 const stop$ = rx
   .fromEvent(document.getElementById('stop'), 'click')
   .pipe(rxop.mapTo(Command.Stop));
+const reset$ = rx
+  .fromEvent(document.getElementById('reset'), 'click')
+  .pipe(rxop.mapTo(Command.Reset));
 const control$ = rx.merge(
-  rx.merge(play$, stop$).pipe(
+  rx.merge(play$, stop$, reset$).pipe(
     rxop.scan((prev: Command, curr: Command) => {
       switch (curr) {
         case Command.Stop:
@@ -45,36 +50,55 @@ const control$ = rx.merge(
         case Command.Play:
           if (prev === Command.Stop) return Command.Play;
           if (prev === Command.Play) return Command.Pause;
+          if (prev === Command.Reset) return Command.Stop;
           return Command.Play;
         default:
           return Command.Stop;
       }
     }, Command.Pause),
-    rxop.map((cmd: Command) => cmd === 1),
-    rxop.tap((x: boolean) => console.log(x)),
-    rxop.map((x: boolean) => ({ play: x }))
+    rxop.tap((cmd: Command) => {
+      switch (cmd) {
+        case Command.Play:
+          $('#play').html("<i class='fas fa-pause fa-lg'></i>");
+          break;
+        case Command.Pause:
+          $('#play').html("<i class='fas fa-play fa-lg'></i>");
+          break;
+        case Command.Stop:
+          $('#play').html("<i class='fas fa-play fa-lg'></i>");
+          break;
+        default:
+      }
+    })
+  ),
+  reset$
+);
+
+const delta = 5;
+const switcher$ = control$.pipe(
+  rxop.tap((cmd: Command) => console.log(cmd)),
+  rxop.switchMap((cmd: Command) =>
+    cmd === Command.Play
+      ? rx.interval(delta).pipe(rxop.mapTo(Command.Inc))
+      : rx.NEVER
   )
 );
 
-const stopWatch$ = control$.pipe(
-  rxop.tap((state: Control) => console.log(state)),
-  rxop.switchMap((control: Control) =>
-    control.play ? rx.interval(1000) : rx.NEVER
-  ),
+const stopWatch$ = rx.merge(control$, switcher$).pipe(
+  rxop.filter((v: Command) => v === Command.Reset || v === Command.Inc),
   rxop.scan(
-    (acc: Counter, curr: number) => {
+    (acc: Counter, curr: Command) => {
       console.log(acc, curr);
       return {
         ...acc,
-        count: acc.count + acc.inc
+        count: curr === Command.Reset ? 0 : acc.count + acc.inc
       };
     },
-    { count: 0, inc: 1000 }
-  ),
-  rxop.tap((state: Counter) => {
-    console.log('fired', state);
-    updateTimer(state.count);
-  })
+    { count: 0, inc: delta }
+  )
 );
 
-stopWatch$.subscribe();
+stopWatch$.subscribe((value: Counter) => {
+  console.log('fired', value);
+  updateTimer(value.count);
+});
