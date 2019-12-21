@@ -27,6 +27,7 @@ module.exports = {
     'import/no-unresolved': 0,
     'no-bitwise': 0,
     'no-console': 0,
+    'no-unused-vars': 0,
     'prettier/prettier': ['error', {singleQuote: true}],
   },
 };

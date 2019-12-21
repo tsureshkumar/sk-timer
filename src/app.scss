@@ -3,7 +3,7 @@ body {
   overflow: hidden;
 }
 
-$grid__bp-md: 768;
+$grid__bp-md: 1024;
 .container {
   position: absolute;
   left: 50%;
@@ -33,5 +33,10 @@ $grid__bp-md: 768;
 #timer {
   text-align: center;
   font-family: 'Play', sans-serif;
-  font-size: 12em;
+  font-size: 8em;
+
+  .hh { color: green}
+  .mm { color: blue}
+  .ss { color: pink}
+  .millis { color: black}
 }
