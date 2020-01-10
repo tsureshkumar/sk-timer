@@ -1,0 +1,16 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: build  on  node
+        uses: actions/setup-node@v1.1.0
+      - name: build
+        run: |
+          npm install
+          npx run build
