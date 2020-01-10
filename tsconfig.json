@@ -1,12 +1,18 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "noUnusedLocals": false,
     "noImplicitAny": false,
-    "module": "esnext",
-    "target": "esnext",
-    "jsx": "react",
-    "allowJs": true
+    "target": "es2015",
+    "module": "es2015",
+    "strict": false,
+    "jsx": "react"
   },
-  "files": ["./node_modules/pixi.js/pixi.js.d.ts"],
+  "include": ["src/**/*", "./node_modules/pixi.js/pixi.js.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }
