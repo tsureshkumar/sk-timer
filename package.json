@@ -42,7 +42,7 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "moment": "^2.24.0",
     "rxjs": "^6.5.4",
     "sprintf-js": "^1.1.2"
